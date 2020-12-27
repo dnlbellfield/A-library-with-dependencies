@@ -1,16 +1,136 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title> Library with dependencies</title>
-  </head>
-  <body>
-    <h1>A library with dependencies</h1>
-    <p>Write a librarySystem function that could handle dependencies. </p>
-    
-   
-      <script src="librarySystem.js"></script>
-      <script src="simpletest.js"></script>
-      <script src="testsForLibrarySystem.js"></script>
-    
-  </body>
-</html>
+<script src="/Users/johnbellfield/Documents/Coding Files/2020 WAC Accounting JS BEASTS/librarySystem With Dependencies/simpletest.js"></script>
+<script>
+    // In AccountingJS Part 6, we wrote a librarySystem function for loading libraries. With that function, you could do stuff like this:
+
+    // librarySystem('app', function() {
+    //   return 'app';
+    // });
+
+    // console.log(librarySystem('app')); // 'app'
+    // But we'd like the ability for libraries created with librarySystem to depend on each other. For example, we'd like to be able to do the following:
+
+    // librarySystem('dependency', [], function() {
+    //   return 'loaded dependency';
+    // });
+
+    // librarySystem('app', ['dependency'], function(dependency) {
+    //   return 'app with ' + dependency;
+    // });
+
+    // librarySystem('app'); // 'app with loaded dependency'
+    // In this example, we have two libraries, 'dependency' and 'app'. The twist here is that 'app' needs the 'dependency' library to work. That's why librarySystem here also takes an array that lists required dependencies.
+
+    // In the example above, we only specify one dependency, but librarySystem should be flexible enough to accept any number (0 or more).
+
+    // Below is an example of a library that needs two dependencies.
+
+    // librarySystem('name', [], function() {
+    //   return 'Gordon';
+    // });
+
+    // librarySystem('company', [], function() {
+    //   return 'Watch and Code';
+    // });
+
+    // librarySystem('workBlurb', ['name', 'company'], function(name, company) {
+    //   return name + ' works at ' + company;
+    // });
+
+    // librarySystem('workBlurb'); // 'Gordon works at Watch and Code'
+    // Your task is to rewrite librarySystem so it accepts dependencies as described above. 
+
+  // function logHi() {
+  //   console.log('hi');
+  // }
+  // logHi();
+  
+  // create case: librarySystem( 'libraryName', function(){ /*return library*/ })
+  // librarySystem( 'stringOfLibraryName', functionThatReturnsLibrary) in other words
+
+  // Use case: librarySystem('libraryName');
+  // 
+
+// (function() {
+//   //create a libraryStorage object in the closure so that we can save 
+//   // data to be used later
+//   var libraryStorage = {};
+
+//   //within the IIFE, write the librarySystem function
+//   function librarySystem(libraryName, callback) {
+//     if (arguments.length > 1) {
+//       //create case
+//       // create a libraryName property on the libraryStorage Object
+//       // and assign the return of callback as the value for libraryStorage.libraryName
+//       libraryStorage[libraryName] = callback();
+//     } else {
+//       // return libraryStorage.libraryName
+//       // which is a call to callback();
+//       return libraryStorage[libraryName];
+
+//     }
+
+//   }
+
+//     window.librarySystem = librarySystem;
+// })()
+
+
+
+// function formatMoney (numbers) {
+//     if (Array.isArray(/* dependencyArray */)) {
+//       return numbers/*dependencyArray*/.map( function mapCallback(element /* dependency */) {
+//         return libraryStorage[(element/* dependency */] = callback();
+//         });
+//     } else {
+//         return '$' + numbers;
+//     }
+// }
+
+
+  (function() {
+    // object to save libraryNames and potentially their dependencies
+    var libraryStorage = {};
+
+    function librarySystem( libraryName, dependencyArray, callback) {
+      // var libraryObject = {
+      //   libraryName:  libraryName,
+      //   dependencyArray: dependencyArray,
+      //   callback: callback
+      // }
+
+      // console.log(libraryObject);
+      // create case
+      if (arguments.length > 1) {
+        if (Array.isArray(dependencyArray) && (dependencyArray.length === 0)) {
+          libraryStorage[libraryName] = callback();
+      // create case with dependencies. Save dependencies as a propery on libraryStorage.libraryName.dependency
+        } else {
+          // console.log('part where you map dependency as argument to librarySystem');
+          if (Array.isArray(dependencyArray) && (dependencyArray.length > 0)) {
+            // libraryStorage[libraryName] = callback();
+            var savedDependencyArray =  dependencyArray.map(function (dependency) {
+                  return librarySystem(dependency);
+                })
+                libraryStorage[libraryName] = callback.apply(this, savedDependencyArray);
+            
+            // console.log('dependencyArray:', savedDependencyArray);
+
+          } 
+        }
+      } else {
+        
+          return libraryStorage[libraryName];
+        
+      }
+    }
+    window.librarySystem = librarySystem;
+
+  })();
+
+  // tests({
+  // 'this test should fail': function() {
+  //   fail('We want to call fail();');
+  // }
+  // });
+
+</script>
